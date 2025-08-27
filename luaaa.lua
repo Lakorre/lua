@@ -142,6 +142,10 @@ local MenuSliderHandle = MachoMenuSlider(SecondSection, "Slider", 10, 0, 100, "%
     print("Slider updated with value ".. Value)
 end)
 
+local MenuSliderHandle = MachoMenuSlider(SecondSection, "Slider", 10, 0, 100, "%", 0, function(Value)
+    print("Slider updated with value ".. Value)
+end)
+
 MachoMenuCheckbox(SecondSection, "Example Checkbox",
     function() print("Enabled") end,
     function() print("Disabled") end
@@ -256,4 +260,5 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
 
