@@ -28,8 +28,7 @@ local SectionFourEnd = vec2(SectionFourStart.x + EachSectionWidth, MenuSize.y - 
 local MenuWindow = MachoMenuWindow(MenuStartCoords.x, MenuStartCoords.y, MenuSize.x, MenuSize.y)
 MachoMenuSetAccent(MenuWindow, 137, 52, 235)
 
-local MenuWindow = MachoMenuWindow(MenuStartCoords.x, MenuStartCoords.y, MenuSize.x, MenuSize.y)
-MachoMenuSetAccent(MenuWindow, 137, 52, 235)
+
 
 -- ✅ القسم الأول: ESX Actions
 local FirstSection = MachoMenuGroup(MenuWindow, "ESX Actions", SectionOneStart.x, SectionOneStart.y, SectionOneEnd.x, SectionOneEnd.y)
@@ -260,5 +259,6 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
 
 
