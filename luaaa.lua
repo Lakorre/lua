@@ -29,7 +29,7 @@ local MenuWindow = MachoMenuWindow(MenuStartCoords.x, MenuStartCoords.y, MenuSiz
 MachoMenuSetAccent(MenuWindow, 137, 52, 235)
 
 -- ====== القسم الأول (أوامر ESX) ======
-local FirstSection = MachoMenuGroup(MenuWindow, "ESX Actions", SectionOneStart.x, SectionOneStart.y, SectionOneEnd.x, SectionOneEnd.y)
+local FirstSection = MachoMenuGroup(MenuWindow, "EsSX Actions", SectionOneStart.x, SectionOneStart.y, SectionOneEnd.x, SectionOneEnd.y)
 
 MachoMenuButton(FirstSection, "Revive Yourself", function()
     TriggerEvent('esx_ambulancejob:revive')
@@ -157,3 +157,4 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
