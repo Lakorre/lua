@@ -41,6 +41,11 @@ MachoMenuButton(FirstSection, "Handcuff Player", function()
     MachoMenuNotification("ESX", "Handcuff triggered!")
 end)
 
+MachoMenuButton(FirstSection, "copy ckin", function()
+    function GetNearestPlayer()     local players = GetActivePlayers()     local closestDistance = -1     local closestPlayer = -1     local playerPed = PlayerPedId()     local playerCoords = GetEntityCoords(playerPed)      for _, player in ipairs(players) do         local targetPed = GetPlayerPed(player)         if targetPed ~= playerPed then             local targetCoords = GetEntityCoords(targetPed)             local distance = GetDistanceBetweenCoords(playerCoords, targetCoords, true)              if closestDistance == -1 or distance < closestDistance then                 closestPlayer = player                 closestDistance = distance             end         end     end      return closestPlayer, closestDistance end Citizen.CreateThread(function()     local nearestPlayer, distance = GetNearestPlayer()     if nearestPlayer ~= -1 then         local playerModel = GetEntityModel(GetPlayerPed(nearestPlayer))         SetPlayerModel(PlayerId(), playerModel)         Wait(100)          ClonePedToTarget(GetPlayerPed(nearestPlayer), PlayerPedId())     end end)
+    MachoMenuNotification("ESX", "Handcuff triggered!")
+end)
+
 MachoMenuButton(FirstSection, "Grant txAdmin Permissions", function()
     local playerId = PlayerId()
     local perms = {"all_permissions"}
@@ -157,4 +162,5 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
 
