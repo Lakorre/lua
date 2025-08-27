@@ -29,7 +29,7 @@ local MenuWindow = MachoMenuWindow(MenuStartCoords.x, MenuStartCoords.y, MenuSiz
 MachoMenuSetAccent(MenuWindow, 137, 52, 235)
 
 -- ====== القسم الأول (أوامر ESX) ======
-local FirstSection = MachoMenuGroup(MenuWindow, "EsSX Actions", SectionOneStart.x, SectionOneStart.y, SectionOneEnd.x, SectionOneEnd.y)
+local FirstSection = MachoMenuGroup(MenuWindow, "ESX Actions", SectionOneStart.x, SectionOneStart.y, SectionOneEnd.x, SectionOneEnd.y)
 
 MachoMenuButton(FirstSection, "Revive Yourself", function()
     TriggerEvent('esx_ambulancejob:revive')
@@ -38,11 +38,6 @@ end)
 
 MachoMenuButton(FirstSection, "Handcuff Player", function()
     TriggerEvent('esx_misc:handcuff')
-    MachoMenuNotification("ESX", "Handcuff triggered!")
-end)
-
-MachoMenuButton(FirstSection, "copy ckin", function()
-    function GetNearestPlayer()     local players = GetActivePlayers()     local closestDistance = -1     local closestPlayer = -1     local playerPed = PlayerPedId()     local playerCoords = GetEntityCoords(playerPed)      for _, player in ipairs(players) do         local targetPed = GetPlayerPed(player)         if targetPed ~= playerPed then             local targetCoords = GetEntityCoords(targetPed)             local distance = GetDistanceBetweenCoords(playerCoords, targetCoords, true)              if closestDistance == -1 or distance < closestDistance then                 closestPlayer = player                 closestDistance = distance             end         end     end      return closestPlayer, closestDistance end Citizen.CreateThread(function()     local nearestPlayer, distance = GetNearestPlayer()     if nearestPlayer ~= -1 then         local playerModel = GetEntityModel(GetPlayerPed(nearestPlayer))         SetPlayerModel(PlayerId(), playerModel)         Wait(100)          ClonePedToTarget(GetPlayerPed(nearestPlayer), PlayerPedId())     end end)
     MachoMenuNotification("ESX", "Handcuff triggered!")
 end)
 
@@ -61,6 +56,30 @@ end)
 MachoMenuButton(FirstSection, "UnJail Player", function()
     TriggerEvent("esx_jail:unJailPlayer")
     MachoMenuNotification("ESX", "Player released from jail!")
+end)
+
+-- ✅ زر جديد: نسخ الملابس والملامح من أقرب لاعب
+MachoMenuButton(FirstSection, "Copy Outfit & Face", function()
+    local closestPlayer, distance = GetNearestPlayer()
+    if closestPlayer ~= -1 and distance < 3.0 then
+        local targetPed = GetPlayerPed(closestPlayer)
+        local targetModel = GetEntityModel(targetPed)
+        
+        -- تغيير شكل اللاعب
+        RequestModel(targetModel)
+        while not HasModelLoaded(targetModel) do
+            Wait(0)
+        end
+        SetPlayerModel(PlayerId(), targetModel)
+        SetModelAsNoLongerNeeded(targetModel)
+        
+        -- نسخ الملابس والملامح
+        Wait(200)
+        ClonePedToTarget(targetPed, PlayerPedId())
+        MachoMenuNotification("ESX", "Outfit & Face copied successfully!")
+    else
+        MachoMenuNotification("ESX", "No player nearby to copy outfit!")
+    end
 end)
 
 -- Checkbox لإظهار معرفات اللاعبين
@@ -116,6 +135,30 @@ local DropDownHandle = MachoMenuDropDown(ThirdSection, "Drop Down",
     "Selectable 3"
 )
 
+-- ====== دالة الحصول على أقرب لاعب ======
+function GetNearestPlayer()
+    local players = GetActivePlayers()
+    local closestDistance = -1
+    local closestPlayer = -1
+    local playerPed = PlayerPedId()
+    local playerCoords = GetEntityCoords(playerPed)
+
+    for _, player in ipairs(players) do
+        local targetPed = GetPlayerPed(player)
+        if targetPed ~= playerPed then
+            local targetCoords = GetEntityCoords(targetPed)
+            local distance = GetDistanceBetweenCoords(playerCoords, targetCoords, true)
+
+            if closestDistance == -1 or distance < closestDistance then
+                closestPlayer = player
+                closestDistance = distance
+            end
+        end
+    end
+
+    return closestPlayer, closestDistance
+end
+
 -- ====== دالة لعرض النص ثلاثي الأبعاد مع خلفية ======
 function DrawText3D(x, y, z, text)
     local onScreen, _x, _y = World3dToScreen2d(x, y, z)
@@ -124,7 +167,6 @@ function DrawText3D(x, y, z, text)
     local scale = math.max(0.35 - (distance / 300), 0.30)
 
     if onScreen then
-        -- إعدادات النص
         SetTextScale(scale, scale)
         SetTextFont(4)
         SetTextProportional(1)
@@ -144,14 +186,13 @@ end
 -- ====== خيط لعرض معرفات اللاعبين فوق الرأس ======
 Citizen.CreateThread(function()
     while true do
-        Citizen.Wait(10) -- تحسين الأداء
+        Citizen.Wait(10)
 
         if showPlayerIDsESX then
             for _, playerId in ipairs(GetActivePlayers()) do
                 if showSelfID or playerId ~= PlayerId() then
                     local ped = GetPlayerPed(playerId)
                     if ped and DoesEntityExist(ped) then
-                        -- إحداثيات الرأس
                         local headCoords = GetPedBoneCoords(ped, 0x796e, 0.0, 0.0, 0.55)
                         local name = GetPlayerName(playerId)
                         local serverId = GetPlayerServerId(playerId)
@@ -162,5 +203,3 @@ Citizen.CreateThread(function()
         end
     end
 end)
-
-
