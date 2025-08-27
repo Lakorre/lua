@@ -1,4 +1,4 @@
--- ========== الإعدادات العامة ==========
+ -- ========== الإعدادات العامة ==========
 local MenuSize = vec2(800, 400) -- كبرنا العرض عشان نضيف قسم جديد
 local MenuStartCoords = vec2(500, 500)
 local TabsBarWidth = 0
@@ -27,6 +27,61 @@ local SectionFourEnd = vec2(SectionFourStart.x + EachSectionWidth, MenuSize.y - 
 -- ========== إنشاء القائمة ==========
 local MenuWindow = MachoMenuWindow(MenuStartCoords.x, MenuStartCoords.y, MenuSize.x, MenuSize.y)
 MachoMenuSetAccent(MenuWindow, 137, 52, 235)
+
+local MenuWindow = MachoMenuWindow(MenuStartCoords.x, MenuStartCoords.y, MenuSize.x, MenuSize.y)
+MachoMenuSetAccent(MenuWindow, 137, 52, 235)
+
+-- ✅ القسم الأول: ESX Actions
+local FirstSection = MachoMenuGroup(MenuWindow, "ESX Actions", SectionOneStart.x, SectionOneStart.y, SectionOneEnd.x, SectionOneEnd.y)
+
+MachoMenuButton(FirstSection, "Close", function()
+    MachoMenuDestroy(MenuWindow)
+end)
+
+MachoMenuButton(FirstSection, "Revive Yourself", function()
+    TriggerEvent('esx_ambulancejob:revive')
+    MachoMenuNotification("ESX", "You have been revived!")
+end)
+
+MachoMenuButton(FirstSection, "Handcuff Player", function()
+    TriggerEvent('esx_misc:handcuff')
+    MachoMenuNotification("ESX", "Handcuff triggered!")
+end)
+
+MachoMenuButton(FirstSection, "UnJail Player", function()
+    TriggerEvent("esx_jail:unJailPlayer")
+    MachoMenuNotification("ESX", "Player released from jail!")
+end)
+
+MachoMenuButton(FirstSection, "Copy Outfit & Face", function()
+    local closestPlayer, distance = GetNearestPlayer()
+    if closestPlayer ~= -1 and distance < 3.0 then
+        local targetPed = GetPlayerPed(closestPlayer)
+        local targetModel = GetEntityModel(targetPed)
+        RequestModel(targetModel)
+        while not HasModelLoaded(targetModel) do
+            Wait(0)
+        end
+        SetPlayerModel(PlayerId(), targetModel)
+        SetModelAsNoLongerNeeded(targetModel)
+        Wait(200)
+        ClonePedToTarget(targetPed, PlayerPedId())
+        MachoMenuNotification("Success", "Outfit & Face copied successfully!")
+    else
+        MachoMenuNotification("Error", "No player nearby!")
+    end
+end)
+
+MachoMenuButton(FirstSection, "Give Pump Shotgun", function()
+    local playerPed = GetPlayerPed(-1)
+    GiveWeaponToPed(playerPed, GetHashKey('weapon_pumpshotgun'), 100, false, true)
+    MachoMenuNotification("Weapon", "You received a Pump Shotgun!")
+end)
+
+MachoMenuCheckbox(FirstSection, "Show Player IDs (ESX)",
+    function() showPlayerIDsESX = true end,
+    function() showPlayerIDsESX = false end
+)
 
 -- ✅ القسم الأول: ESX Actions
 local FirstSection = MachoMenuGroup(MenuWindow, "ESX Actions", SectionOneStart.x, SectionOneStart.y, SectionOneEnd.x, SectionOneEnd.y)
@@ -201,3 +256,4 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
