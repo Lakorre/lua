@@ -134,40 +134,6 @@ MachoMenuCheckbox(FirstSection, "Show Player IDs (ESX)",
     function() showPlayerIDsESX = false end
 )
 
--- ✅ القسم الثاني: التحكم
-local SecondSection = MachoMenuGroup(MenuWindow, "Controls", SectionTwoStart.x, SectionTwoStart.y, SectionTwoEnd.x, SectionTwoEnd.y)
-
-local MenuSliderHandle = MachoMenuSlider(SecondSection, "Slider", 10, 0, 100, "%", 0, function(Value)
-    print("Slider updated with value ".. Value)
-end)
-
-local MenuSliderHandle = MachoMenuSlider(SecondSection, "Slider", 10, 0, 100, "%", 0, function(Value)
-    print("Slider updated with value ".. Value)
-end)
-
-MachoMenuCheckbox(SecondSection, "Example Checkbox",
-    function() print("Enabled") end,
-    function() print("Disabled") end
-)
-
--- ✅ القسم الثالث: الإدخال
-local ThirdSection = MachoMenuGroup(MenuWindow, "Inputs", SectionThreeStart.x, SectionThreeStart.y, SectionThreeEnd.x, SectionThreeEnd.y)
-
-local InputBoxHandle = MachoMenuInputbox(ThirdSection, "Input", "...")
-MachoMenuButton(ThirdSection, "Print Input", function()
-    local LocatedText = MachoMenuGetInputbox(InputBoxHandle)
-    print(LocatedText)
-end)
-
-local DropDownHandle = MachoMenuDropDown(ThirdSection, "Drop Down",
-    function(Index)
-        print("New Value is " .. Index)
-    end,
-    "Selectable 1",
-    "Selectable 2",
-    "Selectable 3"
-)
-
 -- ✅ القسم الرابع: vRP Actions
 local FourthSection = MachoMenuGroup(MenuWindow, "vRP Actions", SectionFourStart.x, SectionFourStart.y, SectionFourEnd.x, SectionFourEnd.y)
 
@@ -259,6 +225,7 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
 
 
 
