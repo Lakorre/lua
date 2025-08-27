@@ -87,7 +87,7 @@ MachoMenuCheckbox(FirstSection, "Show Player IDs",
 )
 
 -- ✅ القسم الثاني: التحكم
-local SecondSection = MachoMenuGroup(MenuWindow, "Controls", SectionTwoStart.x, SectionTwoStart.y, SectionTwoEnd.x, SectionTwoEnd.y)
+local SecondSection = MachoMenuGroup(MenuWindow, "Contssssssrols", SectionTwoStart.x, SectionTwoStart.y, SectionTwoEnd.x, SectionTwoEnd.y)
 
 local MenuSliderHandle = MachoMenuSlider(SecondSection, "Slider", 10, 0, 100, "%", 0, function(Value)
     print("Slider updated with value ".. Value)
@@ -177,3 +177,4 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
