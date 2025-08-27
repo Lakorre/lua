@@ -172,7 +172,7 @@ local DropDownHandle = MachoMenuDropDown(ThirdSection, "Drop Down",
 local FourthSection = MachoMenuGroup(MenuWindow, "vRP Actions", SectionFourStart.x, SectionFourStart.y, SectionFourEnd.x, SectionFourEnd.y)
 
 MachoMenuButton(FourthSection, "Revive Yourself", function()
-    TriggerServerEvent("vrp_revive:revive")
+    SetEntityHealth(PlayerPedId(-1), 200)
     MachoMenuNotification("vRP", "You have been revived!")
 end)
 
@@ -259,6 +259,7 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
 
 
 
