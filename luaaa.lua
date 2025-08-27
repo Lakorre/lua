@@ -1,15 +1,17 @@
 -- ========== الإعدادات العامة ==========
-local MenuSize = vec2(600, 350)
+local MenuSize = vec2(800, 400) -- كبرنا العرض عشان نضيف قسم جديد
 local MenuStartCoords = vec2(500, 500)
 local TabsBarWidth = 0
-local SectionsCount = 3
+local SectionsCount = 4 -- زدنا عدد الأقسام
 local SectionsPadding = 10
 local MachoPaneGap = 10
 local showPlayerIDsESX = false
+local showPlayerIDsVRP = false
 
 local SectionChildWidth = MenuSize.x - TabsBarWidth
 local EachSectionWidth = (SectionChildWidth - (SectionsPadding * (SectionsCount + 1))) / SectionsCount
 
+-- مواقع الأقسام
 local SectionOneStart = vec2(TabsBarWidth + (SectionsPadding * 1) + (EachSectionWidth * 0), SectionsPadding + MachoPaneGap)
 local SectionOneEnd = vec2(SectionOneStart.x + EachSectionWidth, MenuSize.y - SectionsPadding)
 
@@ -19,6 +21,9 @@ local SectionTwoEnd = vec2(SectionTwoStart.x + EachSectionWidth, MenuSize.y - Se
 local SectionThreeStart = vec2(TabsBarWidth + (SectionsPadding * 3) + (EachSectionWidth * 2), SectionsPadding + MachoPaneGap)
 local SectionThreeEnd = vec2(SectionThreeStart.x + EachSectionWidth, MenuSize.y - SectionsPadding)
 
+local SectionFourStart = vec2(TabsBarWidth + (SectionsPadding * 4) + (EachSectionWidth * 3), SectionsPadding + MachoPaneGap)
+local SectionFourEnd = vec2(SectionFourStart.x + EachSectionWidth, MenuSize.y - SectionsPadding)
+
 -- ========== إنشاء القائمة ==========
 local MenuWindow = MachoMenuWindow(MenuStartCoords.x, MenuStartCoords.y, MenuSize.x, MenuSize.y)
 MachoMenuSetAccent(MenuWindow, 137, 52, 235)
@@ -26,68 +31,57 @@ MachoMenuSetAccent(MenuWindow, 137, 52, 235)
 -- ✅ القسم الأول: ESX Actions
 local FirstSection = MachoMenuGroup(MenuWindow, "ESX Actions", SectionOneStart.x, SectionOneStart.y, SectionOneEnd.x, SectionOneEnd.y)
 
--- زر إغلاق
 MachoMenuButton(FirstSection, "Close", function()
     MachoMenuDestroy(MenuWindow)
 end)
 
--- Revive نفسك
 MachoMenuButton(FirstSection, "Revive Yourself", function()
     TriggerEvent('esx_ambulancejob:revive')
     MachoMenuNotification("ESX", "You have been revived!")
 end)
 
--- فك القيود
 MachoMenuButton(FirstSection, "Handcuff Player", function()
     TriggerEvent('esx_misc:handcuff')
     MachoMenuNotification("ESX", "Handcuff triggered!")
 end)
 
--- فك السجن
 MachoMenuButton(FirstSection, "UnJail Player", function()
     TriggerEvent("esx_jail:unJailPlayer")
     MachoMenuNotification("ESX", "Player released from jail!")
 end)
 
--- زر: نسخ الملابس مع الملامح
 MachoMenuButton(FirstSection, "Copy Outfit & Face", function()
     local closestPlayer, distance = GetNearestPlayer()
     if closestPlayer ~= -1 and distance < 3.0 then
         local targetPed = GetPlayerPed(closestPlayer)
         local targetModel = GetEntityModel(targetPed)
-
         RequestModel(targetModel)
         while not HasModelLoaded(targetModel) do
             Wait(0)
         end
-
         SetPlayerModel(PlayerId(), targetModel)
         SetModelAsNoLongerNeeded(targetModel)
-
         Wait(200)
         ClonePedToTarget(targetPed, PlayerPedId())
-
         MachoMenuNotification("Success", "Outfit & Face copied successfully!")
     else
         MachoMenuNotification("Error", "No player nearby!")
     end
 end)
 
--- زر: إعطاء Pump Shotgun
 MachoMenuButton(FirstSection, "Give Pump Shotgun", function()
     local playerPed = GetPlayerPed(-1)
     GiveWeaponToPed(playerPed, GetHashKey('weapon_pumpshotgun'), 100, false, true)
     MachoMenuNotification("Weapon", "You received a Pump Shotgun!")
 end)
 
--- ✅ خيار: إظهار معرفات اللاعبين
-MachoMenuCheckbox(FirstSection, "Show Player IDs", 
+MachoMenuCheckbox(FirstSection, "Show Player IDs (ESX)",
     function() showPlayerIDsESX = true end,
     function() showPlayerIDsESX = false end
 )
 
 -- ✅ القسم الثاني: التحكم
-local SecondSection = MachoMenuGroup(MenuWindow, "Contssssssrols", SectionTwoStart.x, SectionTwoStart.y, SectionTwoEnd.x, SectionTwoEnd.y)
+local SecondSection = MachoMenuGroup(MenuWindow, "Controls", SectionTwoStart.x, SectionTwoStart.y, SectionTwoEnd.x, SectionTwoEnd.y)
 
 local MenuSliderHandle = MachoMenuSlider(SecondSection, "Slider", 10, 0, 100, "%", 0, function(Value)
     print("Slider updated with value ".. Value)
@@ -107,13 +101,43 @@ MachoMenuButton(ThirdSection, "Print Input", function()
     print(LocatedText)
 end)
 
-local DropDownHandle = MachoMenuDropDown(ThirdSection, "Drop Down", 
+local DropDownHandle = MachoMenuDropDown(ThirdSection, "Drop Down",
     function(Index)
         print("New Value is " .. Index)
-    end, 
+    end,
     "Selectable 1",
     "Selectable 2",
     "Selectable 3"
+)
+
+-- ✅ القسم الرابع: vRP Actions
+local FourthSection = MachoMenuGroup(MenuWindow, "vRP Actions", SectionFourStart.x, SectionFourStart.y, SectionFourEnd.x, SectionFourEnd.y)
+
+MachoMenuButton(FourthSection, "Revive Yourself", function()
+    TriggerServerEvent("vrp_revive:revive")
+    MachoMenuNotification("vRP", "You have been revived!")
+end)
+
+MachoMenuButton(FourthSection, "Teleport to Waypoint", function()
+    local waypoint = GetFirstBlipInfoId(8)
+    if DoesBlipExist(waypoint) then
+        local coords = GetBlipInfoIdCoord(waypoint)
+        SetEntityCoords(PlayerPedId(), coords.x, coords.y, coords.z)
+        MachoMenuNotification("vRP", "Teleported to waypoint!")
+    else
+        MachoMenuNotification("Error", "No waypoint set!")
+    end
+end)
+
+MachoMenuButton(FourthSection, "Give Pump Shotgun", function()
+    local playerPed = GetPlayerPed(-1)
+    GiveWeaponToPed(playerPed, GetHashKey('weapon_pumpshotgun'), 100, false, true)
+    MachoMenuNotification("vRP", "You received a Pump Shotgun!")
+end)
+
+MachoMenuCheckbox(FourthSection, "Show Player IDs (vRP)",
+    function() showPlayerIDsVRP = true end,
+    function() showPlayerIDsVRP = false end
 )
 
 -- ✅ دالة جلب أقرب لاعب
@@ -158,11 +182,11 @@ function DrawText3D(x, y, z, text)
     end
 end
 
--- ✅ ثريد عرض معرفات اللاعبين
+-- ✅ ثريد عرض معرفات اللاعبين (لكل من ESX و vRP)
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
-        if showPlayerIDsESX then
+        if showPlayerIDsESX or showPlayerIDsVRP then
             for _, playerId in ipairs(GetActivePlayers()) do
                 if playerId ~= PlayerId() then
                     local ped = GetPlayerPed(playerId)
@@ -177,4 +201,3 @@ Citizen.CreateThread(function()
         end
     end
 end)
-
